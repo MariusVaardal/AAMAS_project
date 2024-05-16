@@ -132,7 +132,7 @@ def assign_target_points_to_adversaries(agents, dists_from_target_points):
             done = True
     return assigned_targets
 
-def get_action_with_coordination(agent, observations, divisor, agent_as_target=False):
+def get_action_with_coordination(agent, observations, divisor):
     target_vects = get_target_vects(divisor)
     agent_abs_pos = observations["agent_0"][2:4]
     target_points = np.add(target_vects, agent_abs_pos)
@@ -150,15 +150,10 @@ def get_action_with_coordination(agent, observations, divisor, agent_as_target=F
 
     assigned_targets = assign_target_points_to_adversaries(observations.keys(), dists_from_target_points) 
 
-    # same as with the greedy function 
     action_vectors = {0: [0, 0], 1: [-1, 0], 2: [1, 0], 3: [0, -1], 4: [0, 1]}
-    if not agent_as_target:
-        target_rel_pos = target_points[assigned_targets[agent]] - observations[agent][2:4] 
-    else:
-        target_rel_pos = observations[agent][4 + NUM_OBSTACLES * 2 + (NUM_ADVERSARIES-1) * 2  : 4 + NUM_OBSTACLES * 2 + (NUM_ADVERSARIES-1) * 2 + 2]
+    target_rel_pos = target_points[assigned_targets[agent]] - observations[agent][2:4] 
     max_action = get_best_action_wrt_target_point(action_vectors, target_rel_pos)
     return max_action, np.linalg.norm(target_rel_pos)
-
 
 # this implementation assumes one prey only
 target_vect_divisor = 1
@@ -172,12 +167,13 @@ while env.agents:
         else:
             actions[agent] = np.random.randint(0,5)
             continue
-    # print(f"SUM of distances from target: {sum_of_distances_from_target}")
+    print(f"SUM of distances from target: {sum_of_distances_from_target}")
     if sum_of_distances_from_target < DISTANCE_THRESHOLD:
         target_vect_divisor = min(target_vect_divisor * 1.5, TARGET_VECT_THRESHOLD)
         print(f"target vect divisor: {target_vect_divisor}")
     
     observations, rewards, terminations, truncations, infos = env.step(actions)
+    # print(observations["adversary_0"])
 
     # print("rewards: ", rewards)
 
