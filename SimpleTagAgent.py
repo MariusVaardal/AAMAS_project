@@ -17,7 +17,7 @@ class SimpleTagAgent(ABC):
         pass
 
     def see(self, obs):
-        self.observation = obs
+        self.observations = obs
 
     def update_observed_agent_positions(self):
         base_index = 4 + 2 * self.num_landmarks
@@ -30,7 +30,7 @@ class SimpleTagAgent(ABC):
                 l.remove(self.name)
                 i = l.index(agent)
                 start_idx = base_index + 2 * i
-                rel_pos = self.observations[start_idx : start_idx + 2]
+                rel_pos = np.array(self.observations[start_idx : start_idx + 2])
                 pos = rel_pos + self_pos
             self.observed_agent_positions[agent] = pos
 

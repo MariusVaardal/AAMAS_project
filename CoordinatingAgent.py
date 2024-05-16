@@ -7,15 +7,21 @@ class CoordinatingAgent(SimpleTagAgent):
 
     def __init__(self, name, num_adversaries, num_landmarks):
         super().__init__(name, num_adversaries, num_landmarks)
-        self.update_target_divisor_threshold = 1
+        self.stay_still_when_dist_to_target_point_is_less_than = 0.2
+        self.get_greedy_when_dist_to_agent_is_less_than = 0.1
+        self.update_target_divisor_threshold = 0.4 * num_adversaries
+        self.reset_target_vect_when_tot_dist_to_agent_is_larger_than = 5
         self.target_vec_divisor = 1
-        self.target_vec_multiplier = 1.3
-        self.target_vec_divisor_upper_limit = 3
+        self.target_vec_add = 0.4
+        self.target_vec_multiplier = 1
+        self.target_vec_divisor_upper_limit = 8
 
     # Functions
     def get_action(self):
-        target_vecs = self.get_target_vecs()
         agent_abs_pos = self.observed_agent_positions["agent_0"]
+        agent_rel_pos = agent_abs_pos - self.observed_agent_positions[self.name]
+        
+        target_vecs = self.get_target_vecs()
         target_points = np.add(target_vecs, agent_abs_pos)
 
         dists_from_target_points = {}
@@ -32,8 +38,15 @@ class CoordinatingAgent(SimpleTagAgent):
         max_action = self.get_best_action_wrt_target_point(self.action_vectors, target_rel_pos)
 
         total_dist_from_target = self.get_total_dist_from_target_points(assigned_targets, target_points)
+        # print(f"Total dist from target points: {total_dist_from_target}")
         if total_dist_from_target < self.update_target_divisor_threshold:
             self.update_target_vec_divisor()
+        
+        best_action = (self.get_best_action_wrt_target_point(self.action_vectors, agent_rel_pos, target_is_agent=True) 
+                    if np.linalg.norm(agent_rel_pos) < self.get_greedy_when_dist_to_agent_is_less_than 
+                    else 
+                    max_action)
+        
         return max_action
     
     def deg_to_rad(self, degrees):
@@ -56,7 +69,9 @@ class CoordinatingAgent(SimpleTagAgent):
             target_vecs.append((vect_x / self.target_vec_divisor, vect_y / self.target_vec_divisor))
         return target_vecs
     
-    def get_best_action_wrt_target_point(self, action_vectors, target_rel_pos):
+    def get_best_action_wrt_target_point(self, action_vectors, target_rel_pos, target_is_agent=False):
+        if np.linalg.norm(target_rel_pos) < self.stay_still_when_dist_to_target_point_is_less_than and not target_is_agent:
+            return 0
         max_dist = 0
         max_action = None
         for action, action_vect in action_vectors.items():
@@ -72,6 +87,15 @@ class CoordinatingAgent(SimpleTagAgent):
             if agent != "agent_0":
                 pos = self.observed_agent_positions[agent]
                 tot_dist += np.linalg.norm(target_points[assigned_targets[agent]] - pos)
+        return tot_dist
+    
+    def get_total_dist_from_agent(self):
+        tot_dist = 0
+        for agent in self.agents:
+            if agent != "agent_0":
+                self_pos = self.observed_agent_positions[self.name]
+                agent_pos = self.observed_agent_positions["agent_0"]
+                tot_dist += np.linalg.norm(agent_pos - self_pos)
         return tot_dist
 
     def assign_target_points_to_adversaries(self, agents, dists_from_target_points):
@@ -96,7 +120,7 @@ class CoordinatingAgent(SimpleTagAgent):
                 done = True
         return assigned_targets
 
-    def update_target_vec_divisor(self):
-        self.target_vec_divisor = min(self.target_vec_multiplier * self.target_vec_divisor, self.target_vec_divisor_upper_limit)
-        print(f"Updated target vec divisor: {self.target_vec_divisor}")
+    def update_target_vec_divisor(self, reset=False):
+        self.target_vec_divisor = min(self.target_vec_add + self.target_vec_divisor, self.target_vec_divisor_upper_limit)
+        print(f"Updated target vec divisor for {self.name}: {self.target_vec_divisor}")
 

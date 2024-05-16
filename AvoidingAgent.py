@@ -30,7 +30,6 @@ class AvoidingAgent(SimpleTagAgent):
                 max_dist = tot_dist
                 max_action = action
             
-        print(f"Avoiding agent chosen action: {max_action}")
         return max_action
 
     def is_in_bounds(self, pos):
