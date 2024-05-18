@@ -9,3 +9,7 @@ def find_closest_action(action_vecs, direction):
     #and selects the action with the highest dot product
     #meaning the action that points in close to the same direction as the direction vector
     return np.argmax(action_vecs@direction)
+
+def get_timestep_reward(rewards):
+    sum_rew = sum([reward for agent, reward in rewards.items() if agent != "agent_0"])
+    return sum_rew

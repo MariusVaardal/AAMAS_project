@@ -1,20 +1,20 @@
 import numpy as np
 import math
 
-from SimpleTagAgent import SimpleTagAgent
+from agent_types.SimpleTagAgent import SimpleTagAgent
+
+TARGET_VEC_DIV_INIT = 1
 
 class CoordinatingAgent(SimpleTagAgent):
 
     def __init__(self, name, num_adversaries, num_landmarks):
         super().__init__(name, num_adversaries, num_landmarks)
         self.stay_still_when_dist_to_target_point_is_less_than = 0.2
-        self.get_greedy_when_dist_to_agent_is_less_than = 0.1
-        self.update_target_divisor_threshold = 0.4 * num_adversaries
-        self.reset_target_vect_when_tot_dist_to_agent_is_larger_than = 5
-        self.target_vec_divisor = 1
-        self.target_vec_add = 0.4
-        self.target_vec_multiplier = 1
-        self.target_vec_divisor_upper_limit = 8
+        self.get_greedy_when_dist_to_agent_is_less_than = 0.8
+        self.update_target_divisor_threshold = 0.2 * num_adversaries
+        self.target_vec_divisor = TARGET_VEC_DIV_INIT
+        self.target_vec_multiplier = 1.3
+        self.target_vec_divisor_upper_limit = 10
 
     # Functions
     def get_action(self):
@@ -46,8 +46,8 @@ class CoordinatingAgent(SimpleTagAgent):
                     if np.linalg.norm(agent_rel_pos) < self.get_greedy_when_dist_to_agent_is_less_than 
                     else 
                     max_action)
-        
-        return max_action
+        assert best_action != None, "ERROR: Best action is None"
+        return best_action
     
     def deg_to_rad(self, degrees):
         radians = degrees * (math.pi / 180)
@@ -79,6 +79,7 @@ class CoordinatingAgent(SimpleTagAgent):
             if dist > max_dist:
                 max_dist = dist
                 max_action = action
+        assert max_action != None, "ERROR: Max action in get best act func is None!"
         return max_action
     
     def get_total_dist_from_target_points(self, assigned_targets, target_points):
@@ -121,6 +122,9 @@ class CoordinatingAgent(SimpleTagAgent):
         return assigned_targets
 
     def update_target_vec_divisor(self, reset=False):
-        self.target_vec_divisor = min(self.target_vec_add + self.target_vec_divisor, self.target_vec_divisor_upper_limit)
-        print(f"Updated target vec divisor for {self.name}: {self.target_vec_divisor}")
+        if self.target_vec_divisor >= self.target_vec_divisor_upper_limit:
+            self.target_vec_divisor = TARGET_VEC_DIV_INIT
+        else:
+            self.target_vec_divisor = min(self.target_vec_multiplier * self.target_vec_divisor, self.target_vec_divisor_upper_limit)
+        # print(f"Updated target vec divisor for {self.name}: {self.target_vec_divisor}")
 

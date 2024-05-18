@@ -1,4 +1,4 @@
-from SimpleTagAgent import SimpleTagAgent
+from agent_types.SimpleTagAgent import SimpleTagAgent
 
 import numpy as np
 

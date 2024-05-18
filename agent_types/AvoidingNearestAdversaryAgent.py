@@ -1,8 +1,9 @@
 import numpy as np
+import math
 
-from SimpleTagAgent import SimpleTagAgent
+from agent_types.SimpleTagAgent import SimpleTagAgent
 
-class AvoidingAgent(SimpleTagAgent):
+class AvoidingNearestAdversaryAgent(SimpleTagAgent):
 
     def __init__(self, name, num_adversaries, num_landmarks) -> None:
         super().__init__(name, num_adversaries, num_landmarks)
@@ -10,7 +11,7 @@ class AvoidingAgent(SimpleTagAgent):
         self.xmax, self.xmin, self.ymax, self.ymin = 1, -1, 1, -1
 
     def get_action(self):
-        max_dist = 0
+        max_dist = -math.inf
         max_action = None
         self_pos = self.observed_agent_positions[self.name]
         for action, action_vector in self.action_vectors.items():
@@ -21,15 +22,18 @@ class AvoidingAgent(SimpleTagAgent):
                              max(pos_after_action[1] - self.ymax, 0) +
                              max(self.ymin - pos_after_action[1], 0))
             else:
-                tot_dist = 0
+                tot_dist = math.inf
                 for agent, pos in self.observed_agent_positions.items():
                     if agent.startswith("adversary"):
                         adv_pos = np.array(pos)
-                        tot_dist += np.linalg.norm(pos_after_action - adv_pos)
+                        adv_dist = np.linalg.norm(pos_after_action - adv_pos)
+                        if adv_dist < tot_dist:
+                            tot_dist = adv_dist
             if tot_dist > max_dist:
                 max_dist = tot_dist
                 max_action = action
             
+        # print(f"Avoiding agent expert chosen action: {max_action}")
         return max_action
 
     def is_in_bounds(self, pos):

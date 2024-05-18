@@ -1,4 +1,4 @@
-from SimpleTagAgent import SimpleTagAgent
+from agent_types.SimpleTagAgent import SimpleTagAgent
 
 class ImmobileAgent(SimpleTagAgent):
     def __init__(self, name, num_adversaries, num_landmarks) -> None:
