@@ -19,7 +19,7 @@ from agent_types.ImmobileAgent import ImmobileAgent
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
 MAX_CYCLES = 200
-NUM_EPISODES = 100
+NUM_EPISODES = 50
 
 RENDER_MODE = "human"
 
@@ -135,7 +135,7 @@ def run_simple_tag_and_plot_results(
     
     for fig in fig_list:
         fig.show()
-        plt.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
+        fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
     plt.show()
 
 run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES)
