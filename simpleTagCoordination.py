@@ -19,7 +19,8 @@ from agent_types.ImmobileAgent import ImmobileAgent
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
 MAX_CYCLES = 200
-NUM_EPISODES = 500
+NUM_EPISODES = 50
+SAVE_PLOTS = False
 
 RENDER_MODE = None
 
@@ -43,8 +44,7 @@ def run_simple_tag_and_get_results(
     for episode in range(1, num_episodes + 1):
         observations, infos = env.reset()
         for agent in coord_agents:
-            agent.observations = observations[agent.name]
-            agent.update_observed_agent_positions()
+            agent.see(observations[agent.name])
             
         episode_reward = 0
         while env.agents:
@@ -55,9 +55,7 @@ def run_simple_tag_and_get_results(
                 actions[agent.name] = action if action != None else 0
             observations, rewards, terminations, truncations, infos = env.step(actions)
             for agent in coord_agents:
-                # agent.see(observations[agent.name])
-                agent.observations = observations[agent.name]
-                agent.update_observed_agent_positions()
+                agent.see(observations[agent.name])
             episode_reward += get_timestep_reward(rewards)
         episode_rewards.append(episode_reward)
         # print(f"Episode: {episode}. Reward: {sum(episode_rewards)}")
@@ -135,7 +133,8 @@ def run_simple_tag_and_plot_results(
     
     for fig in fig_list:
         fig.show()
-        fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
+        if SAVE_PLOTS:
+            fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
     plt.show()
 
 run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES)
