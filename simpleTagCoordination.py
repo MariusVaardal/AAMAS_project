@@ -19,9 +19,9 @@ from agent_types.ImmobileAgent import ImmobileAgent
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
 MAX_CYCLES = 200
-NUM_EPISODES = 50
+NUM_EPISODES = 500
 
-RENDER_MODE = "human"
+RENDER_MODE = None
 
 T = TypeVar('T')
 
@@ -78,7 +78,7 @@ def run_simple_tag_and_plot_results(
     font_oblique = FontProperties(style='oblique')
 
     fig_list = []
-    for i, num_adv in tqdm(enumerate(num_adversaries_list), total=len(num_adversaries_list)):
+    for i, num_adv in tqdm(enumerate(num_adversaries_list), total=len(num_adversaries_list), desc="Different num adv"):
         fig, ax = plt.subplots(1, len(good_agent_types), figsize=(10, 8))
         fig.suptitle(f'{num_adv} ADVERSARIES', 
                     fontsize=18, 
@@ -94,9 +94,9 @@ def run_simple_tag_and_plot_results(
                          fontsize=12, 
                          fontweight=500, 
                          fontproperties=font_italic)
-        for i in range(len(good_agent_types)):
+        for i in tqdm(range(len(good_agent_types)), desc="Good agent types"):
             x = [adv.__name__ for adv in adversary_types]
-            y = [run_simple_tag_and_get_results(num_adv, MAX_CYCLES, None, good_agent_types[i], adv_type, num_episodes) for adv_type in adversary_types]
+            y = [run_simple_tag_and_get_results(num_adv, MAX_CYCLES, RENDER_MODE, good_agent_types[i], adv_type, num_episodes) for adv_type in tqdm(adversary_types, desc="Adversary types", total=len(adversary_types))]
             bars = ax[i].bar(x, 
                       y, 
                       color=['blue', 'red', 'green'], 
