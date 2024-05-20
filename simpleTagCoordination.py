@@ -15,12 +15,13 @@ from agent_types.RandomAgent import RandomAgent
 from agent_types.AvoidingAgent import AvoidingAgent
 from agent_types.AvoidingNearestAdversaryAgent import AvoidingNearestAdversaryAgent
 from agent_types.ImmobileAgent import ImmobileAgent
+from agent_types.RLAgent import RLAgent
 
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
 MAX_CYCLES = 200
-NUM_EPISODES = 50
-SAVE_PLOTS = False
+NUM_EPISODES = 200
+SAVE_PLOTS = True
 
 RENDER_MODE = None
 
@@ -43,20 +44,25 @@ def run_simple_tag_and_get_results(
     episode_rewards = []
     for episode in range(1, num_episodes + 1):
         observations, infos = env.reset()
-        for agent in coord_agents:
-            agent.see(observations[agent.name])
             
         episode_reward = 0
         while env.agents:
+            # Update the observations of all the agents
+            for agent in coord_agents:
+                agent.see(observations[agent.name])
+
+            # get the actions from all the agents according to their policies
             actions = {}
-            sum_of_distances_from_target = 0
             for agent in coord_agents:
                 action = agent.get_action()
                 actions[agent.name] = action if action != None else 0
+            
+            # make a step in the environment
             observations, rewards, terminations, truncations, infos = env.step(actions)
-            for agent in coord_agents:
-                agent.see(observations[agent.name])
+
+            # update the episode reward
             episode_reward += get_timestep_reward(rewards)
+
         episode_rewards.append(episode_reward)
         # print(f"Episode: {episode}. Reward: {sum(episode_rewards)}")
     env.close()
@@ -137,7 +143,7 @@ def run_simple_tag_and_plot_results(
             fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
     plt.show()
 
-run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES)
+run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [GreedyAgent, CoordinatingAgent, RLAgent], NUM_EPISODES)
 
 
 
