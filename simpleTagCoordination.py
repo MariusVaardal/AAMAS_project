@@ -10,12 +10,14 @@ from matplotlib.font_manager import FontProperties
 from pettingzoo.mpe import simple_tag_v3
 
 from agent_types.CoordinatingAgent import CoordinatingAgent
+from agent_types.CoordinatingAgentDemo import CoordinatingAgentDemo
 from agent_types.GreedyAgent import GreedyAgent
 from agent_types.RandomAgent import RandomAgent
 from agent_types.AvoidingAgent import AvoidingAgent
 from agent_types.AvoidingNearestAdversaryAgent import AvoidingNearestAdversaryAgent
 from agent_types.ImmobileAgent import ImmobileAgent
 from agent_types.RLAgent import RLAgent
+from utils.utils import PROJECT_PATH
 
 import argparse
 
@@ -30,6 +32,7 @@ SAVE_PLOTS = True
 
 RENDER_MODE = None
 
+
 T = TypeVar('T')
 
 def run_simple_tag_and_get_results(
@@ -38,11 +41,15 @@ def run_simple_tag_and_get_results(
         render_mode,
         good_agent_type: Type[T],
         adversary_type: Type[T],
-        num_episodes: int
+        num_episodes: int,
+        RLAgent_model_name=None
         ):
     env = simple_tag_v3.parallel_env(num_good=NUM_GOOD, num_adversaries=num_adversaries, num_obstacles=NUM_LANDMARKS, max_cycles=max_cycles, continuous_actions=False, render_mode=render_mode)
     env.reset()
-    coord_agents = [adversary_type(name, num_adversaries, NUM_LANDMARKS) for name in env.agents if name != "agent_0"]
+    if RLAgent_model_name != None:
+        coord_agents = [adversary_type(name, num_adversaries, NUM_LANDMARKS, RLAgent_model_name) for name in env.agents if name != "agent_0"]
+    else:
+        coord_agents = [adversary_type(name, num_adversaries, NUM_LANDMARKS) for name in env.agents if name != "agent_0"]
 
     coord_agents.append(good_agent_type("agent_0", num_adversaries, NUM_LANDMARKS))
 
@@ -149,24 +156,27 @@ def run_simple_tag_and_plot_results(
     plt.show()
 
 #run for graphical demo:
-def run_demo(max_cycles=50, num_episodes=1):
+def run_demo(max_cycles=60, num_episodes=1):
     root = tk.Tk()
     root.withdraw()
     
-    messagebox.showinfo("Demo", "running Immobile prey vs Coordinating predators")
-    run_simple_tag_and_get_results(3, max_cycles, "human", ImmobileAgent, CoordinatingAgent, num_episodes)
+    messagebox.showinfo("Demo", "Avoiding prey vs Greedy predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, GreedyAgent, num_episodes)
 
-    messagebox.showinfo("Demo", "running AvoidingNearestAdversary prey vs Greedy predators")
-    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingNearestAdversaryAgent, GreedyAgent, num_episodes)
+    messagebox.showinfo("Demo", "Random prey vs Coordinating(demo) predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", RandomAgent, CoordinatingAgentDemo, num_episodes)
+    
+    messagebox.showinfo("Demo", "AvoidingNearestAdversary prey vs Coordinating(demo) predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingNearestAdversaryAgent, CoordinatingAgentDemo, num_episodes)
+    
+    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 1 000 steps")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent, num_episodes, RLAgent_model_name='3_adv_1k_steps')
 
-    messagebox.showinfo("Demo", "running Random prey vs Coordinating predators")
-    run_simple_tag_and_get_results(3, max_cycles, "human", RandomAgent, CoordinatingAgent, num_episodes)
-    
-    messagebox.showinfo("Demo", "running AvoidingNearestAdversary prey vs Coordinating predators")
-    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingNearestAdversaryAgent, CoordinatingAgent, num_episodes)
-    
-    messagebox.showinfo("Demo", "running AvoidingNearestAdversaryAgent vs RLAgent")
-    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingNearestAdversaryAgent, RLAgent, num_episodes)
+    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 100 000 steps")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent, num_episodes, RLAgent_model_name='3_adv_100k_steps')
+
+    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 100 000 000 steps")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent, num_episodes, RLAgent_model_name='111M_AA')
 
     root.destroy()
 
