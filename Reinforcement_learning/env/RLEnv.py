@@ -10,7 +10,7 @@ from agent_types.AvoidingAgent import AvoidingAgent
 # from agent_types.ImmobileAgent import ImmobileAgent
 
 NUM_GOOD = 1
-NUM_ADV = 3
+NUM_ADV = 4
 NUM_OBST = 0
 MAX_CYCLES = 200
 CONTINOUS_ACTIONS = False
@@ -69,8 +69,9 @@ class RLEnv(ParallelEnv):
     def action_space(self, agent):
         return self.env.action_space(agent)
 
-def get_concat_vec_envs():
-    env = RLEnv(NUM_GOOD, NUM_ADV, NUM_OBST, MAX_CYCLES, CONTINOUS_ACTIONS, RENDER_MODE)
+def get_concat_vec_envs(num_adversaries):
+    env = RLEnv(NUM_GOOD, num_adversaries, NUM_OBST, MAX_CYCLES, CONTINOUS_ACTIONS, RENDER_MODE)
+    # print(f"Number of adv in env: {len(env.agents)}")
     env = ss.pettingzoo_env_to_vec_env_v1(env)
     env = ss.concat_vec_envs_v1(env, 2, num_cpus=0, base_class="stable_baselines3")
     return env
