@@ -15,7 +15,7 @@ from Reinforcement_learning.env.RLEnv import get_concat_vec_envs
 # model_name = 'best_model'
 
 model_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project/Reinforcement_learning/models/4_adv'
-model_name  = '4_adv_4000000_steps'
+model_name  = '4_adv_50M_steps.zip'
 
 class RLAgent(SimpleTagAgent):
     def __init__(self, name, num_adversaries, num_landmarks) -> None:
