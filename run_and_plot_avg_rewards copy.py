@@ -9,18 +9,14 @@ from matplotlib.font_manager import FontProperties
 
 from pettingzoo.mpe import simple_tag_v3
 
-from agent_types.CoordinatingAgent import CoordinatingAgent
-from agent_types.GreedyAgent import GreedyAgent
-from agent_types.RandomAgent import RandomAgent
 from agent_types.AvoidingAgent import AvoidingAgent
 from agent_types.AvoidingNearestAdversaryAgent import AvoidingNearestAdversaryAgent
-from agent_types.ImmobileAgent import ImmobileAgent
-from agent_types.RLAgent import RLAgent
+from agent_types.RLAgent_4_adv import RLAgent4_1k, RLAgent4_50k, RLAgent4_4M, RLAgent4_50M
 
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
 MAX_CYCLES = 200
-NUM_EPISODES = 200
+NUM_EPISODES = 100
 SAVE_PLOTS = True
 
 RENDER_MODE = None
@@ -103,7 +99,7 @@ def run_simple_tag_and_plot_results(
             y = [run_simple_tag_and_get_results(num_adv, MAX_CYCLES, RENDER_MODE, good_agent_types[i], adv_type, num_episodes) for adv_type in tqdm(adversary_types, desc="Adversary types", total=len(adversary_types))]
             bars = ax[i].bar(x, 
                       y, 
-                      color=['blue', 'red', 'green'], 
+                      color=['purple', 'purple', 'purple', 'purple'], 
                       alpha=0.7,
                       edgecolor='black',
                       linewidth=1.5,  
@@ -143,7 +139,7 @@ def run_simple_tag_and_plot_results(
             fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
     plt.show()
 
-run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [GreedyAgent, CoordinatingAgent, RLAgent], NUM_EPISODES)
+run_simple_tag_and_plot_results([4], [AvoidingAgent, AvoidingNearestAdversaryAgent], [RLAgent4_1k, RLAgent4_50k, RLAgent4_4M, RLAgent4_50M], NUM_EPISODES)
 
 
 
