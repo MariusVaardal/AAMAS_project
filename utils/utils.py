@@ -1,5 +1,8 @@
 import numpy as np
 
+#INSERT THE PATH TO THE PROJECT FOLDER HERE
+PROJECT_PATH = "/Users/jonaskorkosh/Documents/STUDIER/AASMA - Autonomous Agents and Multi-Agent Systems/Project/AAMAS_project"
+
 #action space is {no_action, move_left, move_right, move_down, move_up} ie. Discrete(5)
 #observation is [self_vel, self_pos, landmark_rel_positions, other_agent_rel_positions, other_agent_velocities]
 action_vecs = np.array([[0,0], [-1,0], [1,0], [0,-1], [0,1]])

@@ -1,14 +1,17 @@
 from agent_types.SimpleTagAgent import SimpleTagAgent
+from utils.utils import PROJECT_PATH
 from stable_baselines3 import PPO
 import os
 import sys
 
-proj_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project'
-if not proj_path in sys.path:
-    sys.path.append(proj_path)
+if not PROJECT_PATH in sys.path:
+    sys.path.append(PROJECT_PATH)
 
 from Reinforcement_learning.env.RLEnv import get_concat_vec_envs
 
+#model_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project/Reinforcement_learning/models/3_adv'
+model_path = PROJECT_PATH + '/Reinforcement_learning/models/3_adv'
+model_name = '3_adv_1k_steps'
 
 models_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project/Reinforcement_learning/models'
 best_models = {'2_adv': '2_adv/30M_steps_best', '3_adv': '3_adv/111M_AA', '4_adv': '4_adv/4_adv_50M_steps'}
