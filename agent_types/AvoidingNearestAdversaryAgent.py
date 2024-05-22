@@ -11,6 +11,8 @@ class AvoidingNearestAdversaryAgent(SimpleTagAgent):
         self.xmax, self.xmin, self.ymax, self.ymin = 1, -1, 1, -1
 
     def get_action(self):
+        if not self.observed_agent_positions:
+            return 0
         max_dist = -math.inf
         max_action = None
         self_pos = self.observed_agent_positions[self.name]

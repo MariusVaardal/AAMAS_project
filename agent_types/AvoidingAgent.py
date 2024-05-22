@@ -30,7 +30,7 @@ class AvoidingAgent(SimpleTagAgent):
                 max_dist = tot_dist
                 max_action = action
             
-        return max_action
+        return max_action if max_action != None else 0
 
     def is_in_bounds(self, pos):
         return (pos[0] > self.xmin and

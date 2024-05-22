@@ -18,6 +18,7 @@ class SimpleTagAgent(ABC):
 
     def see(self, obs):
         self.observations = obs
+        self.update_observed_agent_positions()
 
     def update_observed_agent_positions(self):
         base_index = 4 + 2 * self.num_landmarks
