@@ -3,6 +3,8 @@ import math
 from utils.utils import get_timestep_reward
 from typing import Type, TypeVar
 from tqdm import tqdm
+import tkinter as tk
+from tkinter import messagebox
 
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
@@ -19,8 +21,8 @@ from agent_types.RLAgent_4_adv import RLAgent4_1k, RLAgent4_50k, RLAgent4_4M, RL
 
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
-MAX_CYCLES = 200
-NUM_EPISODES = 100
+MAX_CYCLES = 75
+NUM_EPISODES = 50
 SAVE_PLOTS = True
 
 RENDER_MODE = None
@@ -69,17 +71,17 @@ def run_simple_tag_and_get_results(
             episode_reward += get_timestep_reward(rewards)
 
         episode_rewards.append(episode_reward)
-        # print(f"Episode: {episode}. Reward: {sum(episode_rewards)}")
+
     env.close()
     avg_rew = sum(episode_rewards) / len(episode_rewards)
-    # print(f"Avg : {avg_rew}. For {len(episode_rewards)} number of episodes")
     return avg_rew
 
 def run_simple_tag_and_plot_results(
         num_adversaries_list: list[int], 
         good_agent_types: list[Type[T]],
         adversary_types: list[Type[T]],
-        num_episodes: int
+        num_episodes: int,
+        colors: list
         ):
     # Define fonts
     font_normal = FontProperties(style='normal')
@@ -98,7 +100,7 @@ def run_simple_tag_and_plot_results(
                     fontproperties=font_oblique)
 
         fig.subplots_adjust(wspace=0.4)
-        # Set y-label
+
         ax[0].set_ylabel(f'Avg. reward over {num_episodes} episodes', 
                          fontsize=12, 
                          fontweight=500, 
@@ -108,7 +110,7 @@ def run_simple_tag_and_plot_results(
             y = [run_simple_tag_and_get_results(num_adv, MAX_CYCLES, RENDER_MODE, good_agent_types[i], adv_type, num_episodes) for adv_type in tqdm(adversary_types, desc="Adversary types", total=len(adversary_types))]
             bars = ax[i].bar(x, 
                       y, 
-                      color=['purple', 'purple', 'purple', 'purple'], 
+                      color=colors, 
                       alpha=0.7,
                       edgecolor='black',
                       linewidth=1.5,  
@@ -148,53 +150,8 @@ def run_simple_tag_and_plot_results(
             fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
     plt.show()
 
-#run for graphical demo:
-def run_demo(max_cycles=60, num_episodes=1):
-    root = tk.Tk()
-    root.withdraw()
-    
-    messagebox.showinfo("Demo", "Avoiding prey vs Greedy predators")
-    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, GreedyAgent, num_episodes)
 
-    messagebox.showinfo("Demo", "Random prey vs Coordinating(demo) predators")
-    run_simple_tag_and_get_results(3, max_cycles, "human", RandomAgent, CoordinatingAgentDemo, num_episodes)
-    
-    messagebox.showinfo("Demo", "AvoidingNearestAdversary prey vs Coordinating(demo) predators")
-    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingNearestAdversaryAgent, CoordinatingAgentDemo, num_episodes)
-    
-    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 1 000 steps")
-    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent, num_episodes, RLAgent_model_name='3_adv_1k_steps')
-
-    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 100 000 steps")
-    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent, num_episodes, RLAgent_model_name='3_adv_100k_steps')
-
-    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 100 000 000 steps")
-    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent, num_episodes, RLAgent_model_name='111M_AA')
-
-    root.destroy()
-
-run_demo()
-run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES)
-run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [GreedyAgent, CoordinatingAgent], NUM_EPISODES)
-
-#if we want to run the script from the command line with arguments:
-"""
-def main(run_graphical_demo, reproduce_plots):
-    if run_graphical_demo:
-        run_demo()
-
-    if reproduce_plots:
-        run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES)
-        run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [GreedyAgent, CoordinatingAgent, RLAgent], NUM_EPISODES)
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='AASMA Project Script')
-    parser.add_argument('--run_graphical_demo', action='store_true', help='runs the graphical demo')
-    parser.add_argument('--reproduce_plots', action='store_true', help='reproduces the plots from the report')
-    args = parser.parse_args()
-    
-    main(args.run_graphical_demo, args.reproduce_plots)
-"""
+run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES, ['blue', 'red', 'green'])
 
 
 

@@ -1,14 +1,13 @@
 from pettingzoo import ParallelEnv
 from pettingzoo.mpe import simple_tag_v3
-from utils.utils import PROJECT_PATH
 import functools
 import supersuit as ss
 import sys
-#sys.path.append('/home/mariusvaardal/AAMAS_project/AAMAS_project')
-sys.path.append(PROJECT_PATH)
+
+proj_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project'
+if not proj_path in sys.path:
+    sys.path.append(proj_path)
 from agent_types.AvoidingAgent import AvoidingAgent
-# from agent_types.AvoidingNearestAdversaryAgent import AvoidingNearestAdversaryAgent
-# from agent_types.ImmobileAgent import ImmobileAgent
 
 NUM_GOOD = 1
 NUM_ADV = 4

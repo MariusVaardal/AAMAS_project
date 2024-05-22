@@ -3,29 +3,33 @@ import math
 from utils.utils import get_timestep_reward
 from typing import Type, TypeVar
 from tqdm import tqdm
+import tkinter as tk
+from tkinter import messagebox
 
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
 from pettingzoo.mpe import simple_tag_v3
 
-from agent_types.CoordinatingAgent import CoordinatingAgent
-from agent_types.GreedyAgent import GreedyAgent
-from agent_types.RandomAgent import RandomAgent
 from agent_types.AvoidingAgent import AvoidingAgent
-from agent_types.AvoidingNearestAdversaryAgent import AvoidingNearestAdversaryAgent
 from agent_types.ImmobileAgent import ImmobileAgent
+from agent_types.RandomAgent import RandomAgent
+from agent_types.GreedyAgent import GreedyAgent
+from agent_types.CoordinatingAgent import CoordinatingAgent
+from agent_types.CoordinatingAgentDemo import CoordinatingAgentDemo
+from agent_types.AvoidingNearestAdversaryAgent import AvoidingNearestAdversaryAgent
 from agent_types.RLAgent_2_adv import RLAgent2
 from agent_types.RLAgent_3_adv import RLAgent3
-from agent_types.RLAgent_4_adv import RLAgent4_50M
+from agent_types.RLAgent_4_adv import RLAgent4_1k, RLAgent4_50k, RLAgent4_4M, RLAgent4_50M
 
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
-MAX_CYCLES = 200
+MAX_CYCLES = 50
 NUM_EPISODES = 100
 SAVE_PLOTS = True
 
 RENDER_MODE = None
+
 
 T = TypeVar('T')
 
@@ -35,12 +39,12 @@ def run_simple_tag_and_get_results(
         render_mode,
         good_agent_type: Type[T],
         adversary_type: Type[T],
-        num_episodes: int
+        num_episodes: int,
         ):
     env = simple_tag_v3.parallel_env(num_good=NUM_GOOD, num_adversaries=num_adversaries, num_obstacles=NUM_LANDMARKS, max_cycles=max_cycles, continuous_actions=False, render_mode=render_mode)
     env.reset()
-    coord_agents = [adversary_type(name, num_adversaries, NUM_LANDMARKS) for name in env.agents if name != "agent_0"]
 
+    coord_agents = [adversary_type(name, num_adversaries, NUM_LANDMARKS) for name in env.agents if name != "agent_0"]
     coord_agents.append(good_agent_type("agent_0", num_adversaries, NUM_LANDMARKS))
 
     episode_rewards = []
@@ -105,7 +109,7 @@ def run_simple_tag_and_plot_results(
             y = [run_simple_tag_and_get_results(num_adv, MAX_CYCLES, RENDER_MODE, good_agent_types[i], adv_type, num_episodes) for adv_type in tqdm(adversary_types, desc="Adversary types", total=len(adversary_types))]
             bars = ax[i].bar(x, 
                       y, 
-                      color=['green', 'purple', 'yellow'], 
+                      color=['purple', 'purple', 'purple', 'purple'], 
                       alpha=0.7,
                       edgecolor='black',
                       linewidth=1.5,  
@@ -143,16 +147,49 @@ def run_simple_tag_and_plot_results(
         fig.show()
         if SAVE_PLOTS:
             fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
-    # plt.show()
+    plt.show()
 
-# run_simple_tag_and_plot_results([2], [AvoidingAgent, AvoidingNearestAdversaryAgent], [CoordinatingAgent, RLAgent2], NUM_EPISODES)
-# run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [CoordinatingAgent, RLAgent3], NUM_EPISODES)
-run_simple_tag_and_plot_results([4], [AvoidingAgent, AvoidingNearestAdversaryAgent], [CoordinatingAgent, RLAgent4_50M], NUM_EPISODES)
+#run for graphical demo:
+def run_demo(max_cycles=60, num_episodes=1):
+    root = tk.Tk()
+    root.withdraw()
+    
+    messagebox.showinfo("Demo", "Avoiding prey vs Greedy predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, GreedyAgent, num_episodes)
 
+    messagebox.showinfo("Demo", "Random prey vs Coordinating(demo) predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", RandomAgent, CoordinatingAgentDemo, num_episodes)
+    
+    messagebox.showinfo("Demo", "AvoidingNearestAdversary prey vs Coordinating(demo) predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingNearestAdversaryAgent, CoordinatingAgentDemo, num_episodes)
 
+    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 100 000 000 steps")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent3, num_episodes)
 
+    root.destroy()
 
+run_demo()
+run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES)
+run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [GreedyAgent, CoordinatingAgent], NUM_EPISODES)
 
+#if we want to run the script from the command line with arguments:
+"""
+def main(run_graphical_demo, reproduce_plots):
+    if run_graphical_demo:
+        run_demo()
+
+    if reproduce_plots:
+        run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES)
+        run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [GreedyAgent, CoordinatingAgent, RLAgent], NUM_EPISODES)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='AASMA Project Script')
+    parser.add_argument('--run_graphical_demo', action='store_true', help='runs the graphical demo')
+    parser.add_argument('--reproduce_plots', action='store_true', help='reproduces the plots from the report')
+    args = parser.parse_args()
+    
+    main(args.run_graphical_demo, args.reproduce_plots)
+"""
 
 
 
