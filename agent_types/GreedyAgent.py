@@ -1,7 +1,10 @@
 import sys
+import os
  
-# setting path
-sys.path.append('/home/mariusvaardal/AAMAS_project/AAMAS_project')
+# appending project path to PATH
+proj_path = os.path.dirname(os.getcwd())
+if not proj_path in sys.path:
+    sys.path.append(proj_path)
 
 from utils.utils import find_closest_action, action_vecs
 

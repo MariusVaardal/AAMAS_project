@@ -3,7 +3,8 @@ from stable_baselines3 import PPO
 import os
 import sys
 
-proj_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project'
+# appending project path to PATH
+proj_path = os.path.dirname(os.getcwd())
 if not proj_path in sys.path:
     sys.path.append(proj_path)
 

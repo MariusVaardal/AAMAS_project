@@ -16,20 +16,22 @@ from agent_types.ImmobileAgent import ImmobileAgent
 from agent_types.RandomAgent import RandomAgent
 from agent_types.GreedyAgent import GreedyAgent
 from agent_types.CoordinatingAgent import CoordinatingAgent
+from agent_types.CoordinatingAgentDemo import CoordinatingAgentDemo
 from agent_types.AvoidingNearestAdversaryAgent import AvoidingNearestAdversaryAgent
+from agent_types.RLAgent_2_adv import RLAgent2
+from agent_types.RLAgent_3_adv import RLAgent3_1k, RLAgent3_100k, RLAgent3_100M
 from agent_types.RLAgent_4_adv import RLAgent4_1k, RLAgent4_50k, RLAgent4_4M, RLAgent4_50M
 
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
-MAX_CYCLES = 75
-NUM_EPISODES = 50
+MAX_CYCLES = 200
+NUM_EPISODES = 20
 SAVE_PLOTS = True
 
 RENDER_MODE = None
 
 
 T = TypeVar('T')
-
 def run_simple_tag_and_get_results(
         num_adversaries: int, 
         max_cycles: int, 
@@ -150,8 +152,56 @@ def run_simple_tag_and_plot_results(
             fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
     plt.show()
 
+#run for graphical demo:
+def run_demo(max_cycles=60, num_episodes=1):
+    root = tk.Tk()
+    root.withdraw()
+    
+    messagebox.showinfo("Demo", "Avoiding prey vs Greedy predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, GreedyAgent, num_episodes)
 
+    messagebox.showinfo("Demo", "Random prey vs Coordinating(demo) predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", RandomAgent, CoordinatingAgentDemo, num_episodes)
+    
+    messagebox.showinfo("Demo", "AvoidingNearestAdversary prey vs Coordinating(demo) predators")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingNearestAdversaryAgent, CoordinatingAgentDemo, num_episodes)
+
+    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 1000 steps")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent3_1k, num_episodes)
+
+    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 100 000 steps")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent3_100k, num_episodes)
+
+    messagebox.showinfo("Demo", "Avoiding prey vs RL predators after training for 100 000 000 steps")
+    run_simple_tag_and_get_results(3, max_cycles, "human", AvoidingAgent, RLAgent3_100M, num_episodes)
+
+    root.destroy()
+
+run_demo()
 run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES, ['blue', 'red', 'green'])
+run_simple_tag_and_plot_results([2], [AvoidingAgent, AvoidingNearestAdversaryAgent], [CoordinatingAgent, RLAgent2], NUM_EPISODES, ['green', 'purple'])
+run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [CoordinatingAgent, RLAgent3_100M], NUM_EPISODES, ['green', 'purple'])
+run_simple_tag_and_plot_results([4], [AvoidingAgent, AvoidingNearestAdversaryAgent], [CoordinatingAgent, RLAgent4_50M], NUM_EPISODES, ['green', 'purple'])
+run_simple_tag_and_plot_results([4], [AvoidingAgent, AvoidingNearestAdversaryAgent], [RLAgent4_1k, RLAgent4_50k, RLAgent4_4M, RLAgent4_50M], NUM_EPISODES, ['purple', 'purple', 'purple', 'purple'])
+
+#if we want to run the script from the command line with arguments:
+"""
+def main(run_graphical_demo, reproduce_plots):
+    if run_graphical_demo:
+        run_demo()
+
+    if reproduce_plots:
+        run_simple_tag_and_plot_results([2, 3, 4], [ImmobileAgent, RandomAgent, AvoidingAgent, AvoidingNearestAdversaryAgent], [RandomAgent, GreedyAgent, CoordinatingAgent], NUM_EPISODES)
+        run_simple_tag_and_plot_results([3], [AvoidingAgent, AvoidingNearestAdversaryAgent], [GreedyAgent, CoordinatingAgent, RLAgent], NUM_EPISODES)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='AASMA Project Script')
+    parser.add_argument('--run_graphical_demo', action='store_true', help='runs the graphical demo')
+    parser.add_argument('--reproduce_plots', action='store_true', help='reproduces the plots from the report')
+    args = parser.parse_args()
+    
+    main(args.run_graphical_demo, args.reproduce_plots)
+"""
 
 
 
