@@ -6,7 +6,11 @@ This project requires a Python 3.10 environment. Follow the steps below to run t
 
 ### 0. Clone the repo to your computer
 
-Clone the github repository to somewhere on your computer. 
+Clone the github repository to somewhere on your computer. This can be done with the following command 
+
+```bash 
+git clone https://github.com/MariusVaardal/AAMAS_project.git
+```
 
 ### 1. Create a Python 3.10 Virtual Environment
 
@@ -110,6 +114,13 @@ git lfs pull
 ### 6. Unzip the downloaded .zip files
 
 Unzip the build.zip and dist.zip files into the same directory (root directory) with the same name. You can do this manually or using a command, but the important thing is that you end up with a directory named "build" and a directory named "dist" in the project's root directory (same directory as the README.md file). Note that the dist.zip is large and will take some time to extract. 
+
+On windows we recommend unzipping manually, but in Linux, you can use the commands:
+
+```bash
+unzip build.zip
+unzip dist.zip
+```
 
 ### 7. If you are using Linux or MacOS:
 
