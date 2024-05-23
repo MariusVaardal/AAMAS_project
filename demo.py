@@ -5,7 +5,10 @@ from typing import Type, TypeVar
 from tqdm import tqdm
 import tkinter as tk
 from tkinter import messagebox
+import pygame.freetype
 
+import matplotlib
+matplotlib.use('Qt5Agg')  # Use an interactive backend
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
@@ -25,7 +28,7 @@ from agent_types.RLAgent_4_adv import RLAgent4_1k, RLAgent4_50k, RLAgent4_4M, RL
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
 MAX_CYCLES = 200
-NUM_EPISODES = 20
+NUM_EPISODES = 1
 SAVE_PLOTS = True
 
 RENDER_MODE = None
@@ -152,8 +155,8 @@ def run_simple_tag_and_plot_results(
             fig.savefig(f'./plots/{fig._suptitle.get_text()}. {num_episodes} episodes.png', bbox_inches='tight')
     plt.show()
 
-#run for graphical demo:
-def run_demo(max_cycles=60, num_episodes=1):
+# #run for graphical demo:
+def run_demo(max_cycles=1, num_episodes=1):
     root = tk.Tk()
     root.withdraw()
     
