@@ -52,17 +52,20 @@ pip install -r requirements.txt
 
 This will install all the packages listed in the `requirements.txt` file into your virtual environment.
 
+### 4. Run the projects .exe-file
 
-### 4. Important: Change project folder
+This command will run the .exe-file for the demo of our project. The videos will be displayed followed by a reproduction of the plots from the report. It is important that you run the .exe-file from the projects root directory.  
 
-Navigate to `utils.py` and change the variable `PROJECT_PATH` to be equal to the path where the project is located. Save the file.
-
-### 5. Run the project
-
-This command will run the project. The videos will be displayed followed by a reproduction of the plots from the report.
+#### On Windows
 
 ```bash
-python simpleTagCoordination.py
+.\dist\demo\demo.exe
+```
+
+#### On macOS and Linux
+
+```bash
+./dist/demo/demo
 ```
 
 

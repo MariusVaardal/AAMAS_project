@@ -28,8 +28,8 @@ from agent_types.RLAgent_4_adv import RLAgent4_1k, RLAgent4_50k, RLAgent4_4M, RL
 NUM_GOOD = 1
 NUM_LANDMARKS = 0
 MAX_CYCLES = 200
-NUM_EPISODES = 1
-SAVE_PLOTS = True
+NUM_EPISODES = 5
+SAVE_PLOTS = False
 
 RENDER_MODE = None
 
@@ -156,7 +156,7 @@ def run_simple_tag_and_plot_results(
     plt.show()
 
 # #run for graphical demo:
-def run_demo(max_cycles=1, num_episodes=1):
+def run_demo(max_cycles=60, num_episodes=1):
     root = tk.Tk()
     root.withdraw()
     
