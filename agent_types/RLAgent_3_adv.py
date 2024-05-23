@@ -4,14 +4,14 @@ import os
 import sys
 
 # appending project path to PATH
-proj_path = os.path.dirname(os.getcwd())
+proj_path = os.getcwd()
 if not proj_path in sys.path:
     sys.path.append(proj_path)
 
 from Reinforcement_learning.env.RLEnv import get_concat_vec_envs
 
 
-models_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project/Reinforcement_learning/models/3_adv'
+models_path = proj_path + '/Reinforcement_learning/models/3_adv'
 
 class RLAgent3_100M(SimpleTagAgent):
     def __init__(self, name, num_adversaries, num_landmarks) -> None:

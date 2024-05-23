@@ -4,14 +4,14 @@ import os
 import sys
 
 # appending project path to PATH
-proj_path = os.path.dirname(os.getcwd())
+proj_path = os.getcwd()
 if not proj_path in sys.path:
     sys.path.append(proj_path)
 
 from Reinforcement_learning.env.RLEnv import get_concat_vec_envs
 
 
-models_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project/Reinforcement_learning/models/4_adv'
+models_path = proj_path + '/Reinforcement_learning/models/4_adv'
 model_50M = '4_adv_50M_steps'
 model_1k = '4_adv_1k_steps'
 model_50k = '4_adv_50k_steps'

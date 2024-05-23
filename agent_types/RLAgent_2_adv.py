@@ -4,26 +4,21 @@ import os
 import sys
 
 # appending project path to PATH
-proj_path = os.path.dirname(os.getcwd())
+proj_path = os.getcwd()
 if not proj_path in sys.path:
     sys.path.append(proj_path)
 
 from Reinforcement_learning.env.RLEnv import get_concat_vec_envs
 
 #model_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project/Reinforcement_learning/models/3_adv'
-model_path = proj_path + '/Reinforcement_learning/models/3_adv'
-model_name = '3_adv_1k_steps'
-
-models_path = '/home/mariusvaardal/AAMAS_project/AAMAS_project/Reinforcement_learning/models'
-best_models = {'2_adv': '2_adv/30M_steps_best', '3_adv': '3_adv/111M_AA', '4_adv': '4_adv/4_adv_50M_steps'}
-
-model_path = os.path.join(models_path, best_models['2_adv'])
+model_path = proj_path + '/Reinforcement_learning/models/2_adv'
+model_name = '30M_steps_best'
 
 class RLAgent2(SimpleTagAgent):
     def __init__(self, name, num_adversaries, num_landmarks) -> None:
         super().__init__(name, num_adversaries, num_landmarks)
         self.env = get_concat_vec_envs(num_adversaries=num_adversaries)
-        self.model = PPO.load(os.path.join(models_path, model_path), self.env)
+        self.model = PPO.load(os.path.join(model_path, model_name), self.env)
     
     def get_action(self) -> list:
         # print(f"Observation length: {len(self.observations)}")
