@@ -74,8 +74,8 @@ If it is not installed, it can be installed here: [git installation](https://git
 #### On macOS and Linux
 
 ```bash
-sudo apt-get update
-sudo apt-get install git-lfs
+brew update
+brew install git-lfs
 ```
 
 ### 4. Initialize git lfs in the root directory of your cloned repo.
